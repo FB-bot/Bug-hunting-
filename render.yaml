@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: bugbot-x
+    runtime: python
+    buildCommand: ""
+    startCommand: bash start.sh
+    envVars:
+      - key: BOT_TOKEN
+        sync: false
