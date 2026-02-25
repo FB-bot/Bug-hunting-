@@ -1,9 +1,0 @@
-services:
-  - type: web
-    name: Bug-hunting-
-    runtime: python
-    buildCommand: ""
-    startCommand: bash start.sh
-    envVars:
-      - key: BOT_TOKEN
-        sync: false
