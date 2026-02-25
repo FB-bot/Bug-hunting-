@@ -1,6 +1,0 @@
-admin
-login
-backup
-test
-api
-dashboard
