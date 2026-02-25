@@ -1,7 +1,8 @@
 import os
-from telegram.ext import ApplicationBuilder, CommandHandler
+import threading
 
-from keepalive import keep_alive
+from telegram.ext import ApplicationBuilder, CommandHandler
+from web import app
 
 from core.engine import start_scan
 from core.massscan import mass_scan
@@ -13,6 +14,7 @@ TOKEN = os.getenv("BOT_TOKEN")
 
 if not TOKEN:
     raise Exception("BOT_TOKEN missing")
+
 
 async def scan(update,context):
 
@@ -29,26 +31,32 @@ async def scan(update,context):
     await update.message.reply_text(result)
     await update.message.reply_document(pdf)
 
-app = ApplicationBuilder().token(TOKEN).build()
 
-# Scanner Commands
-app.add_handler(CommandHandler("scan",scan))
-app.add_handler(CommandHandler("mass",mass_scan))
-app.add_handler(CommandHandler("internet",internet_scan))
+def start_bot():
 
-# Toolkit Commands
-app.add_handler(CommandHandler("repeat",repeater.repeat))
-app.add_handler(CommandHandler("fuzz",fuzzer.fuzz))
-app.add_handler(CommandHandler("cookie",session.cookie))
-app.add_handler(CommandHandler("csrf",csrf.generate))
-app.add_handler(CommandHandler("clickjack",clickjack.test))
-app.add_handler(CommandHandler("apitest",api.test))
-app.add_handler(CommandHandler("ws",websocket.connect))
+    tg = ApplicationBuilder().token(TOKEN).build()
 
-print("🚀 BOT STARTING ON RENDER")
+    tg.add_handler(CommandHandler("scan",scan))
+    tg.add_handler(CommandHandler("mass",mass_scan))
+    tg.add_handler(CommandHandler("internet",internet_scan))
 
-keep_alive()
+    tg.add_handler(CommandHandler("repeat",repeater.repeat))
+    tg.add_handler(CommandHandler("fuzz",fuzzer.fuzz))
+    tg.add_handler(CommandHandler("cookie",session.cookie))
+    tg.add_handler(CommandHandler("csrf",csrf.generate))
+    tg.add_handler(CommandHandler("clickjack",clickjack.test))
+    tg.add_handler(CommandHandler("apitest",api.test))
+    tg.add_handler(CommandHandler("ws",websocket.connect))
 
-print("✅ KEEPALIVE RUNNING")
+    print("Telegram Bot Started")
 
-app.run_polling()
+    tg.run_polling()
+
+
+# Run bot in background thread
+threading.Thread(target=start_bot).start()
+
+
+# Run Flask Web Service
+port = int(os.environ.get("PORT", 10000))
+app.run(host="0.0.0.0", port=port)
