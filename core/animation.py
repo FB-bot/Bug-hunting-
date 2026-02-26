@@ -1,11 +1,11 @@
 import asyncio
 
-async def scanning(msg):
+async def loading(msg):
 
-    frames = [
-        "🔎 Initializing scan.",
-        "🔎 Initializing scan..",
-        "🔎 Initializing scan..."
+    frames=[
+        "⚡ Loading.",
+        "⚡ Loading..",
+        "⚡ Loading..."
     ]
 
     for _ in range(2):
@@ -14,18 +14,15 @@ async def scanning(msg):
             await asyncio.sleep(0.5)
 
 
-async def progress(msg):
+async def scanning(msg):
 
-    steps = [
-        "▱▱▱▱▱▱▱▱▱▱ 0%",
-        "▰▱▱▱▱▱▱▱▱▱ 10%",
-        "▰▰▱▱▱▱▱▱▱▱ 30%",
-        "▰▰▰▰▱▱▱▱▱▱ 50%",
-        "▰▰▰▰▰▰▱▱▱▱ 70%",
-        "▰▰▰▰▰▰▰▰▱▱ 90%",
-        "▰▰▰▰▰▰▰▰▰▰ 100%"
+    steps=[
+        "🔎 Recon Running",
+        "🧪 Testing",
+        "📂 Searching",
+        "📄 Finishing"
     ]
 
     for s in steps:
-        await msg.edit_text(f"⚡ Scanning\n{s}")
-        await asyncio.sleep(0.6)
+        await msg.edit_text(s)
+        await asyncio.sleep(1)
