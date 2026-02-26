@@ -1,6 +1,6 @@
 import requests
 
-payloads=["'","../","<script>1</script>"]
+payloads=["'","<script>1</script>","../"]
 
 async def fuzz(update,context):
 
