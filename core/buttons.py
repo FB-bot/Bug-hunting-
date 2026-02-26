@@ -1,9 +1,9 @@
-from telegram import InlineKeyboardButton,InlineKeyboardMarkup
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 def main_menu():
 
-    keyboard=[
-        [InlineKeyboardButton("🧰 Tools",callback_data="tools_menu")]
+    keyboard = [
+        [InlineKeyboardButton("🧰 Tools", callback_data="tools")],
     ]
 
     return InlineKeyboardMarkup(keyboard)
@@ -11,12 +11,13 @@ def main_menu():
 
 def tools_menu():
 
-    keyboard=[
-        [InlineKeyboardButton("💉 SQLi",callback_data="tool_sqli")],
-        [InlineKeyboardButton("⚡ Fuzzer",callback_data="tool_fuzz")],
-        [InlineKeyboardButton("🌐 Recon",callback_data="tool_recon")],
-        [InlineKeyboardButton("🎯 Params",callback_data="tool_params")],
-        [InlineKeyboardButton("⬅ Back",callback_data="back_main")]
+    keyboard = [
+        [InlineKeyboardButton("🌐 Recon", callback_data="recon")],
+        [InlineKeyboardButton("🎯 Params", callback_data="params")],
+        [InlineKeyboardButton("📜 JS Finder", callback_data="js")],
+        [InlineKeyboardButton("💉 SQLi", callback_data="sqli")],
+        [InlineKeyboardButton("⚡ Fuzzer", callback_data="fuzz")],
+        [InlineKeyboardButton("⬅ Back", callback_data="back")]
     ]
 
     return InlineKeyboardMarkup(keyboard)
