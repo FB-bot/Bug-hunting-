@@ -1,22 +1,29 @@
-import requests
+import aiohttp
 
-subs=["www","api","dev","test","admin"]
+subs = ["www", "api", "dev", "test", "admin"]
 
-async def recon(update,context):
+async def recon(update, context):
 
-    domain=context.args[0]
+    if not context.args:
+        await update.message.reply_text("/recon example.com")
+        return
 
-    found=[]
+    domain = context.args[0]
 
-    for s in subs:
-        url=f"http://{s}.{domain}"
-        try:
-            r=requests.get(url,timeout=3)
-            if r.status_code<500:
-                found.append(url)
-        except:
-            pass
+    found = []
+
+    async with aiohttp.ClientSession() as session:
+
+        for s in subs:
+            url = f"http://{s}.{domain}"
+
+            try:
+                async with session.get(url, timeout=5) as r:
+                    if r.status < 500:
+                        found.append(url)
+            except:
+                pass
 
     await update.message.reply_text(
-        "🌐 Recon Result\n\n"+ "\n".join(found)
+        "🌐 Recon Result\n\n" + "\n".join(found)
     )
