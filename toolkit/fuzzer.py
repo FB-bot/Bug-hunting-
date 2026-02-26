@@ -1,19 +1,29 @@
-import requests
+import aiohttp
 
-payloads=["'","<script>1</script>","../"]
+payloads = ["'", "<script>", "../"]
 
-async def fuzz(update,context):
+async def fuzz(update, context):
 
-    url=context.args[0]
+    if not context.args:
+        await update.message.reply_text(
+            "Usage:\n/fuzz https://site.com?id="
+        )
+        return
 
-    hits=[]
+    base = context.args[0]
 
-    for p in payloads:
-        try:
-            r=requests.get(url+p)
-            if r.status_code==200:
-                hits.append(p)
-        except:
-            pass
+    hits = []
 
-    await update.message.reply_text(str(hits))
+    async with aiohttp.ClientSession() as session:
+
+        for p in payloads:
+            try:
+                async with session.get(base + p) as r:
+                    if r.status == 200:
+                        hits.append(p)
+            except:
+                pass
+
+    await update.message.reply_text(
+        f"Payload Hits:\n{hits}"
+    )
