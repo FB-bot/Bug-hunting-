@@ -1,18 +1,35 @@
-import requests
+import aiohttp
 
-payload="'"
+payload = "'"
 
-async def test(update,context):
+async def test(update, context):
 
-    url=context.args[0]
-
-    r=requests.get(url+payload)
-
-    if "sql" in r.text.lower():
+    if not context.args:
         await update.message.reply_text(
-            "⚠️ Possible SQLi"
+            "Usage:\n/sqli https://site.com?id="
         )
-    else:
+        return
+
+    url = context.args[0] + payload
+
+    await update.message.reply_text("💉 Testing SQL Injection...")
+
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, timeout=10) as r:
+
+                text = await r.text()
+
+                if "sql" in text.lower():
+                    await update.message.reply_text(
+                        "⚠️ Possible SQL Injection Found"
+                    )
+                else:
+                    await update.message.reply_text(
+                        "✅ No SQLi Detected"
+                    )
+
+    except Exception as e:
         await update.message.reply_text(
-            "✅ SQLi Not Detected"
+            f"Error: {str(e)}"
         )
