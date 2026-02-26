@@ -9,7 +9,20 @@ from core.engine import start_scan
 from core.massscan import mass_scan
 from core.internet_scan import internet_scan
 
-from toolkit import repeater,fuzzer,session,csrf,clickjack,api,websocket
+from core.ui import panel
+from core.animation import scanning, progress
+from core.buttons import main_menu
+
+from toolkit import (
+    repeater,
+    fuzzer,
+    session,
+    csrf,
+    clickjack,
+    api,
+    websocket,
+    sqli
+)
 
 TOKEN = os.getenv("BOT_TOKEN")
 
@@ -17,6 +30,16 @@ if not TOKEN:
     raise Exception("BOT_TOKEN missing")
 
 
+# ---------- START ----------
+async def start(update, context):
+
+    await update.message.reply_text(
+        "⚡ BUGBOT-X READY",
+        reply_markup=main_menu()
+    )
+
+
+# ---------- FULL SCAN ----------
 async def scan(update, context):
 
     if not context.args:
@@ -25,23 +48,28 @@ async def scan(update, context):
 
     target = context.args[0]
 
-    msg = await update.message.reply_text("Scanning...")
+    msg = await update.message.reply_text("Starting Scan...")
+
+    await scanning(msg)
+    await progress(msg)
 
     result, pdf = await start_scan(target, msg)
 
-    await update.message.reply_text(result)
+    await update.message.reply_text(
+        panel("SCAN COMPLETE", result)
+    )
+
     await update.message.reply_document(pdf)
 
 
-# ✅ Start Flask in background
+# ---------- WEB SERVER ----------
 threading.Thread(target=start_web).start()
 
-print("Web Server Started")
 
-
-# ✅ Telegram bot MAIN THREAD এ চলবে
+# ---------- TELEGRAM BOT ----------
 app = ApplicationBuilder().token(TOKEN).build()
 
+app.add_handler(CommandHandler("start", start))
 app.add_handler(CommandHandler("scan", scan))
 app.add_handler(CommandHandler("mass", mass_scan))
 app.add_handler(CommandHandler("internet", internet_scan))
@@ -54,6 +82,9 @@ app.add_handler(CommandHandler("clickjack", clickjack.test))
 app.add_handler(CommandHandler("apitest", api.test))
 app.add_handler(CommandHandler("ws", websocket.connect))
 
-print("Telegram Bot Running")
+# ⭐ SQLi Command
+app.add_handler(CommandHandler("sqli", sqli.test))
+
+print("🚀 BUGBOT-X RUNNING")
 
 app.run_polling()
