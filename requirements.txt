@@ -6,3 +6,4 @@ aiosqlite
 playwright
 flask
 websocket-client
+aiohttp
