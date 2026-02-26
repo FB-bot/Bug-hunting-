@@ -10,14 +10,11 @@ from telegram.ext import (
 from web import start_web
 
 from core.buttons import main_menu, tools_menu
-from core.animation import scanning
 from core.ui import panel
-
-from bounty import recon, params, jsfinder
-from toolkit import sqli, fuzzer
 
 TOKEN = os.getenv("BOT_TOKEN")
 
+# start render web server
 threading.Thread(target=start_web).start()
 
 app = ApplicationBuilder().token(TOKEN).build()
@@ -32,7 +29,7 @@ async def start(update, context):
     )
 
 
-# ================= BUTTON SYSTEM =================
+# ================= BUTTON HANDLER =================
 async def buttons(update, context):
 
     query = update.callback_query
@@ -40,7 +37,7 @@ async def buttons(update, context):
 
     data = query.data
 
-    # OPEN TOOL MENU
+    # OPEN TOOLS MENU
     if data == "tools":
         await query.edit_message_text(
             "🧰 Select Tool",
@@ -50,66 +47,41 @@ async def buttons(update, context):
     # BACK BUTTON
     elif data == "back":
         await query.edit_message_text(
-            "Main Menu",
+            "⚡ Main Menu",
             reply_markup=main_menu()
         )
 
-    # ---------- RECON ----------
+    # TOOL BUTTONS
     elif data == "recon":
+        await query.edit_message_text(
+            "Use:\n/recon example.com"
+        )
 
-        await query.edit_message_text("🌐 Running Recon...")
-        await scanning(query)
-
-        context.args = ["example.com"]
-        await recon.recon(query, context)
-
-    # ---------- PARAMS ----------
     elif data == "params":
+        await query.edit_message_text(
+            "Use:\n/params example.com"
+        )
 
-        await query.edit_message_text("🎯 Finding Parameters...")
-        await scanning(query)
-
-        context.args = ["example.com"]
-        await params.params(query, context)
-
-    # ---------- JS FINDER ----------
     elif data == "js":
+        await query.edit_message_text(
+            "Use:\n/js example.com"
+        )
 
-        await query.edit_message_text("📜 Searching JS Files...")
-        await scanning(query)
-
-        context.args = ["example.com"]
-        await jsfinder.jsfinder(query, context)
-
-    # ---------- SQLi ----------
     elif data == "sqli":
+        await query.edit_message_text(
+            "Use:\n/sqli https://site.com?id="
+        )
 
-        await query.edit_message_text("💉 SQLi Testing...")
-        await scanning(query)
-
-        context.args = ["https://example.com?id="]
-        await sqli.test(query, context)
-
-    # ---------- FUZZER ----------
     elif data == "fuzz":
-
-        await query.edit_message_text("⚡ Fuzzing...")
-        await scanning(query)
-
-        context.args = ["https://example.com?id="]
-        await fuzzer.fuzz(query, context)
+        await query.edit_message_text(
+            "Use:\n/fuzz https://site.com?id="
+        )
 
 
-# COMMAND SUPPORT ALSO
+# ================= REGISTER =================
 app.add_handler(CommandHandler("start", start))
-app.add_handler(CommandHandler("recon", recon.recon))
-app.add_handler(CommandHandler("params", params.params))
-app.add_handler(CommandHandler("js", jsfinder.jsfinder))
-app.add_handler(CommandHandler("sqli", sqli.test))
-app.add_handler(CommandHandler("fuzz", fuzzer.fuzz))
-
 app.add_handler(CallbackQueryHandler(buttons))
 
-print("🔥 FULL BUTTON SYSTEM ACTIVE")
+print("✅ BUTTON SYSTEM WORKING")
 
 app.run_polling()
